@@ -39,56 +39,71 @@ public class LaTeXRenderer: NSObject {
         let bundlePath = bundle.bundlePath
         print("<iOSLaTeX> bundlePath ", bundlePath)
         
-        let htmlTemplatePath = bundle.path(forResource: "Assets/MathJaxRenderer", ofType: "html")!
+        let bundlePathMain = Bundle.main.bundlePath
         
-        let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
-        let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
+        print("<iOSLaTeX> bundlePathMain ", bundlePathMain)
         
-        let contentController = WKUserContentController()
-        let config = WKWebViewConfiguration()
+        //let htmlTemplatePath = bundle.path(forResource: "Assets/MathJaxRenderer", ofType: "html")!
         
-        contentController.add(self, name: self.mathJaxCallbackHandler)
-        config.userContentController = contentController
-        
-        let parentBounds = parentView.bounds
-        let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
-        
-        self.webView = WKWebView(frame: webViewFrame, configuration: config)
-        
-        /*
-         * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
-         * If not added, complex/long LaTeX will take ages to render
-         */
-        self.webView.isHidden = true
-        
-        self.webView.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.parentView.addSubview(self.webView)
-        self.parentView.sendSubviewToBack(self.webView)
-        
-        if #available(iOS 11, *) {
-            let guide = self.parentView.safeAreaLayoutGuide
-            NSLayoutConstraint.activate([
-                self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
-                guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
-                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-                ])
+        if let htmlTemplatePath = Bundle.main.path(forResource: "MathJaxRenderer", ofType: "html") {
+            do {
+                let htmlContent = try String(contentsOfFile: htmlTemplatePath, encoding: .utf8)
+                
+                let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
+                let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
+                
+                let contentController = WKUserContentController()
+                let config = WKWebViewConfiguration()
+                
+                contentController.add(self, name: self.mathJaxCallbackHandler)
+                config.userContentController = contentController
+                
+                let parentBounds = parentView.bounds
+                let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
+                
+                self.webView = WKWebView(frame: webViewFrame, configuration: config)
+                
+                /*
+                 * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
+                 * If not added, complex/long LaTeX will take ages to render
+                 */
+                self.webView.isHidden = true
+                
+                self.webView.translatesAutoresizingMaskIntoConstraints = false
+                
+                self.parentView.addSubview(self.webView)
+                self.parentView.sendSubviewToBack(self.webView)
+                
+                if #available(iOS 11, *) {
+                    let guide = self.parentView.safeAreaLayoutGuide
+                    NSLayoutConstraint.activate([
+                        self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
+                        guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
+                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+                        ])
+                    
+                } else {
+                    let standardSpacing: CGFloat = 8.0
+                    NSLayoutConstraint.activate([
+                        self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
+                        self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
+                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+                        ])
+                }
             
+                self.webView.navigationDelegate = self
+                self.webView.uiDelegate = self
+                
+                self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
+                
+            } catch {
+                print("<iOSLaTeX> Failed to read HTML file content: \(error.localizedDescription)")
+            }
         } else {
-            let standardSpacing: CGFloat = 8.0
-            NSLayoutConstraint.activate([
-                self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
-                self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
-                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-                ])
+            print("<iOSLaTeX> HTML file not found")
         }
-    
-        self.webView.navigationDelegate = self
-        self.webView.uiDelegate = self
-        
-        self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
     }
     
     @objc public func render(_ laTeX: String, completion: @escaping (UIImage?, String?)->()) {
