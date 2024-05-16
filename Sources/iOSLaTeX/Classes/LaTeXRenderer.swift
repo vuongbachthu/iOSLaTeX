@@ -48,6 +48,7 @@ public class LaTeXRenderer: NSObject {
         if let htmlTemplatePath = Bundle.main.path(forResource: "MathJaxRenderer", ofType: "html") {
             do {
                 let htmlContent = try String(contentsOfFile: htmlTemplatePath, encoding: .utf8)
+                print("<iOSLaTeX> bundlePathMain htmlContent ", htmlContent)
                 
                 let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
                 let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
