@@ -29,6 +29,7 @@ open class LaTeXImageView: UIImageView {
     }
     
     @objc open func render(_ laTeX: String, shouldResize: Bool = false, completion: ((String?)->())? = nil) {
+        print("<iOSLaTeX> LaTeXImageView render begin")
         if self.laTeXRenderer == nil {
             self.laTeXRenderer = LaTeXRenderer(parentView: self)
         }
@@ -37,7 +38,10 @@ open class LaTeXImageView: UIImageView {
         self.backgroundColor = self.backgroundColorWhileRenderingLaTeX
 
         self.laTeXRenderer?.render(laTeX) { [weak self] (renderedLaTeX, error)  in
-            guard let strongSelf = self else { return }
+            guard let strongSelf = self else {
+                print("<iOSLaTeX> LaTeXImageView render end strongSelf")
+                return
+            }
             
             if error == nil {
                 strongSelf.image = renderedLaTeX
@@ -47,7 +51,8 @@ open class LaTeXImageView: UIImageView {
                     heightConstraint.constant = newHeight
                 }
             }
-
+            
+            print("<iOSLaTeX> LaTeXImageView render end")
             completion?(error)
         }
     }

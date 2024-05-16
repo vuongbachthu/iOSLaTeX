@@ -16,11 +16,13 @@ internal class LaTeXRenderOperation: AsyncOperation {
     @objc var error: String?
     
     @objc init(_ laTeX: String, withRenderer laTeXRenderer: LaTeXRenderer) {
+        print("<iOSLaTeX> LaTeXRenderOperation init begin")
         self.laTeX = laTeX
         self.laTeXRenderer = laTeXRenderer
     }
     
     override func start() {
+        print("<iOSLaTeX> LaTeXRenderOperation start begin")
         guard !self.isCancelled else {
             self.finish(true)
             return
@@ -34,10 +36,12 @@ internal class LaTeXRenderOperation: AsyncOperation {
             while(!strongSelf.laTeXRenderer.isReady) { /* wait */ }
             
             strongSelf.renderLaTeX()
+            print("<iOSLaTeX> LaTeXRenderOperation global end")
         }
     }
     
-    @objc func renderLaTeX(){
+    @objc func renderLaTeX() {
+        print("<iOSLaTeX> LaTeXRenderOperation renderLaTeX begin")
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             
@@ -46,6 +50,7 @@ internal class LaTeXRenderOperation: AsyncOperation {
                 strongSelf.error = error
                 
                 strongSelf.finish(true)
+                print("<iOSLaTeX> LaTeXRenderOperation renderLaTeX end")
             })
         }
     }

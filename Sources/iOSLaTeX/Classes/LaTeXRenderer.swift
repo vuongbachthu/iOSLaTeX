@@ -37,140 +37,141 @@ public class LaTeXRenderer: NSObject {
         
         let bundle = Bundle(for: type(of: self))
         let bundlePath = bundle.bundlePath
-        print("<iOSLaTeX> bundlePath ", bundlePath)
+        print("<iOSLaTeX> LaTeXRenderer bundlePath ", bundlePath)
         
         let bundlePathMain = Bundle.main.bundlePath
         
-        print("<iOSLaTeX> bundlePathMain ", bundlePathMain)
+        print("<iOSLaTeX> LaTeXRenderer bundlePathMain ", bundlePathMain)
         
-        let htmlTemplatePath = bundle.path(forResource: "MathJaxRenderer", ofType: "html")!
-        
-        let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
-        let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
-        
-        let contentController = WKUserContentController()
-        let config = WKWebViewConfiguration()
-        
-        contentController.add(self, name: self.mathJaxCallbackHandler)
-        config.userContentController = contentController
-        
-        let parentBounds = parentView.bounds
-        let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
-        
-        self.webView = WKWebView(frame: webViewFrame, configuration: config)
-        
-        /*
-         * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
-         * If not added, complex/long LaTeX will take ages to render
-         */
-        self.webView.isHidden = true
-        
-        self.webView.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.parentView.addSubview(self.webView)
-        self.parentView.sendSubviewToBack(self.webView)
-        
-        if #available(iOS 11, *) {
-            let guide = self.parentView.safeAreaLayoutGuide
-            NSLayoutConstraint.activate([
-                self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
-                guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
-                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-                ])
-            
-        } else {
-            let standardSpacing: CGFloat = 8.0
-            NSLayoutConstraint.activate([
-                self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
-                self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
-                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-                ])
-        }
-    
-        self.webView.navigationDelegate = self
-        self.webView.uiDelegate = self
-        
-        self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
-        
-//        if let htmlTemplatePath = Bundle.main.path(forResource: "MathJaxRenderer", ofType: "html") {
-//            do {
-//                let htmlContent = try String(contentsOfFile: htmlTemplatePath, encoding: .utf8)
-//                print("<iOSLaTeX> bundlePathMain htmlContent ", htmlContent)
-//                
-//                let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
-//                let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
-//                
-//                let contentController = WKUserContentController()
-//                let config = WKWebViewConfiguration()
-//                
-//                contentController.add(self, name: self.mathJaxCallbackHandler)
-//                config.userContentController = contentController
-//                
-//                let parentBounds = parentView.bounds
-//                let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
-//                
-//                self.webView = WKWebView(frame: webViewFrame, configuration: config)
-//                
-//                /*
-//                 * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
-//                 * If not added, complex/long LaTeX will take ages to render
-//                 */
-//                self.webView.isHidden = true
-//                
-//                self.webView.translatesAutoresizingMaskIntoConstraints = false
-//                
-//                self.parentView.addSubview(self.webView)
-//                self.parentView.sendSubviewToBack(self.webView)
-//                
-//                if #available(iOS 11, *) {
-//                    let guide = self.parentView.safeAreaLayoutGuide
-//                    NSLayoutConstraint.activate([
-//                        self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
-//                        guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
-//                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-//                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-//                        ])
-//                    
-//                } else {
-//                    let standardSpacing: CGFloat = 8.0
-//                    NSLayoutConstraint.activate([
-//                        self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
-//                        self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
-//                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
-//                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
-//                        ])
-//                }
+//        let htmlTemplatePath = bundle.path(forResource: "MathJaxRenderer", ofType: "html")!
+//        
+//        let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
+//        let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
+//        
+//        let contentController = WKUserContentController()
+//        let config = WKWebViewConfiguration()
+//        
+//        contentController.add(self, name: self.mathJaxCallbackHandler)
+//        config.userContentController = contentController
+//        
+//        let parentBounds = parentView.bounds
+//        let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
+//        
+//        self.webView = WKWebView(frame: webViewFrame, configuration: config)
+//        
+//        /*
+//         * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
+//         * If not added, complex/long LaTeX will take ages to render
+//         */
+//        self.webView.isHidden = true
+//        
+//        self.webView.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        self.parentView.addSubview(self.webView)
+//        self.parentView.sendSubviewToBack(self.webView)
+//        
+//        if #available(iOS 11, *) {
+//            let guide = self.parentView.safeAreaLayoutGuide
+//            NSLayoutConstraint.activate([
+//                self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
+//                guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
+//                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+//                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+//                ])
 //            
-//                self.webView.navigationDelegate = self
-//                self.webView.uiDelegate = self
-//                
-//                self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
-//                
-//            } catch {
-//                print("<iOSLaTeX> Failed to read HTML file content: \(error.localizedDescription)")
-//            }
 //        } else {
-//            print("<iOSLaTeX> HTML file not found")
+//            let standardSpacing: CGFloat = 8.0
+//            NSLayoutConstraint.activate([
+//                self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
+//                self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
+//                self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+//                self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+//                ])
 //        }
+//    
+//        self.webView.navigationDelegate = self
+//        self.webView.uiDelegate = self
+//        
+//        self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
+        
+        if let htmlTemplatePath = Bundle.main.path(forResource: "MathJaxRenderer", ofType: "html") {
+            do {
+                let htmlContent = try String(contentsOfFile: htmlTemplatePath, encoding: .utf8)
+                print("<iOSLaTeX> LaTeXRenderer bundlePathMain htmlContent ", htmlContent)
+                
+                let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
+                let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
+                
+                let contentController = WKUserContentController()
+                let config = WKWebViewConfiguration()
+                
+                contentController.add(self, name: self.mathJaxCallbackHandler)
+                config.userContentController = contentController
+                
+                let parentBounds = parentView.bounds
+                let webViewFrame = CGRect(origin: parentBounds.origin, size: CGSize(width: parentBounds.size.width, height: parentBounds.size.height))
+                
+                self.webView = WKWebView(frame: webViewFrame, configuration: config)
+                
+                /*
+                 * Need to add WkWebView to view hierarchy to improve loading time (Apple bug)
+                 * If not added, complex/long LaTeX will take ages to render
+                 */
+                self.webView.isHidden = true
+                
+                self.webView.translatesAutoresizingMaskIntoConstraints = false
+                
+                self.parentView.addSubview(self.webView)
+                self.parentView.sendSubviewToBack(self.webView)
+                
+                if #available(iOS 11, *) {
+                    let guide = self.parentView.safeAreaLayoutGuide
+                    NSLayoutConstraint.activate([
+                        self.webView.topAnchor.constraint(equalToSystemSpacingBelow: guide.topAnchor, multiplier: 1.0),
+                        guide.bottomAnchor.constraint(equalToSystemSpacingBelow: self.webView.bottomAnchor, multiplier: 1.0),
+                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+                        ])
+                    
+                } else {
+                    let standardSpacing: CGFloat = 8.0
+                    NSLayoutConstraint.activate([
+                        self.webView.topAnchor.constraint(equalTo: self.parentView.topAnchor, constant: standardSpacing),
+                        self.parentView.bottomAnchor.constraint(equalTo: self.webView.bottomAnchor, constant: standardSpacing),
+                        self.webView.leftAnchor.constraint(equalTo: self.parentView.leftAnchor, constant: 0),
+                        self.webView.rightAnchor.constraint(equalTo: self.parentView.rightAnchor, constant: 0)
+                        ])
+                }
+            
+                self.webView.navigationDelegate = self
+                self.webView.uiDelegate = self
+                
+                self.webView.loadHTMLString(webViewHtml, baseURL: webViewBaseUrl)
+                
+            } catch {
+                print("<iOSLaTeX> LaTeXRenderer Failed to read HTML file content: \(error.localizedDescription)")
+            }
+        } else {
+            print("<iOSLaTeX> LaTeXRenderer HTML file not found")
+        }
     }
     
     @objc public func render(_ laTeX: String, completion: @escaping (UIImage?, String?)->()) {
-        print("<iOSLaTeX> render begin")
+        print("<iOSLaTeX> LaTeXRenderer render begin")
         let renderOperation = LaTeXRenderOperation(laTeX, withRenderer: self)
         renderOperation.completionBlock = {
             DispatchQueue.main.async {
+                print("<iOSLaTeX> LaTeXRenderer render end completion")
                 completion(renderOperation.renderedLaTeX, renderOperation.error)
             }
         }
         
         self.renderQueue.addOperation(renderOperation)
-        print("<iOSLaTeX> render end")
+        print("<iOSLaTeX> LaTeXRenderer render end")
     }
     
     @objc internal func startRendering(_ laTeX: String, completion: @escaping (UIImage?, String?)->()) {
-        print("<iOSLaTeX> startRendering begin")
+        print("<iOSLaTeX> LaTeXRenderer startRendering begin")
         self.renderCompletionHander = completion
         
         if self.parentView != nil {
@@ -200,10 +201,10 @@ public class LaTeXRenderer: NSObject {
                 userInfo: nil,
                 repeats: false
             )
-            print("<iOSLaTeX> startRendering end true")
+            print("<iOSLaTeX> LaTeXRendererstartRendering end true")
             
         } else {
-            print("<iOSLaTeX> startRendering end false")
+            print("<iOSLaTeX> LaTeXRenderer startRendering end false")
             
         }
         
@@ -211,22 +212,22 @@ public class LaTeXRenderer: NSObject {
     }
     
     @objc private func renderTimeout() {
-        print("<iOSLaTeX> renderTimeout begin")
+        print("<iOSLaTeX> LaTeXRenderer renderTimeout begin")
         self.timeoutTimer?.invalidate()
         self.handleLaTeXRenderingFailure("<iOSLaTeX> renderTimeout end: Timed out while rendering LaTeX")
     }
     
     fileprivate func handleLaTeXRenderingFailure(_ message: String) {
-        print("<iOSLaTeX> handleLaTeXRenderingFailure begin")
+        print("<iOSLaTeX> LaTeXRenderer handleLaTeXRenderingFailure begin")
         self.timeoutTimer?.invalidate()
         
         self.renderCompletionHander?(nil, message)
-        print("<iOSLaTeX> handleLaTeXRenderingFailure end")
+        print("<iOSLaTeX> LaTeXRenderer handleLaTeXRenderingFailure end")
     }
     
     
     fileprivate func handleLaTeXRenderingSuccess(message: Any) {
-        print("<iOSLaTeX> handleLaTeXRenderingSuccess begin")
+        print("<iOSLaTeX> LaTeXRenderer handleLaTeXRenderingSuccess begin")
         self.timeoutTimer?.invalidate()
         
         guard let data = (message as? String)?.data(using: .utf8),
@@ -235,13 +236,13 @@ public class LaTeXRenderer: NSObject {
             let widthFloat = jsonDict["width"],
             let heightFloat = jsonDict["height"] else {
                 
-            self.handleLaTeXRenderingFailure("<iOSLaTeX> handleLaTeXRenderingFailure Failure processing MathJax Signal")
-            print("<iOSLaTeX> handleLaTeXRenderingSuccess end")
+            self.handleLaTeXRenderingFailure("<iOSLaTeX> LaTeXRenderer handleLaTeXRenderingFailure: Failure processing MathJax Signal")
+            print("<iOSLaTeX> LaTeXRenderer handleLaTeXRenderingSuccess end")
             return
         }
         
         self.getLaTeXImage(withWidth: widthFloat, withHeight: heightFloat) { [weak self] (image, error) in
-            print("<iOSLaTeX> getLaTeXImage callback begin")
+            print("<iOSLaTeX> LaTeXRenderer getLaTeXImage callback begin")
             guard let strongSelf = self else { return }
             
             if let error = error {
@@ -250,7 +251,7 @@ public class LaTeXRenderer: NSObject {
             }
             
             guard let image = image else {
-                strongSelf.handleLaTeXRenderingFailure("Failure grabbing image data from WkWebView")
+                strongSelf.handleLaTeXRenderingFailure("<iOSLaTeX> LaTeXRendererFailure getLaTeXImage: grabbing image data from WkWebView")
                 return
             }
             
@@ -259,13 +260,13 @@ public class LaTeXRenderer: NSObject {
             if let hidingView = strongSelf.hidingView, let _ = hidingView.superview {
                hidingView.removeFromSuperview()
             }
-            print("<iOSLaTeX> getLaTeXImage callback end")
+            print("<iOSLaTeX> LaTeXRenderer getLaTeXImage callback end")
             strongSelf.renderCompletionHander?(image, nil)
         }
     }
     
     private func getLaTeXImage(withWidth latexWidth: CGFloat, withHeight latexHeight: CGFloat, completion: @escaping (UIImage?, String?) -> ()) {
-        print("<iOSLaTeX> getLaTeXImage begin")
+        print("<iOSLaTeX> LaTeXRenderer getLaTeXImage begin")
         let scale =  latexWidth / self.webView.frame.width
         
         let width = latexWidth > self.webView.frame.width ? latexWidth : self.webView.frame.width
@@ -281,7 +282,7 @@ public class LaTeXRenderer: NSObject {
          */
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) { [weak self] in
             guard let strongSelf = self else {
-                print("<iOSLaTeX> getLaTeXImage end strongSelf nil")
+                print("<iOSLaTeX> LaTeXRenderer getLaTeXImage end strongSelf nil")
                 return
             }
             
@@ -289,33 +290,33 @@ public class LaTeXRenderer: NSObject {
             strongSelf.webView.drawHierarchy(in: strongSelf.webView.bounds, afterScreenUpdates: true)
             
             guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-                completion(nil, "<iOSLaTeX> getLaTeXImage Failure while taking WKWebView snapshot")
+                completion(nil, "<iOSLaTeX> LaTeXRenderer getLaTeXImage Failure while taking WKWebView snapshot")
                 return
             }
             
             UIGraphicsEndImageContext()
                         
             guard let croppedImage = strongSelf.crop(image, toWidth: latexWidth, andHeight: latexHeight) else {
-                completion(nil, "<iOSLaTeX> getLaTeXImage Failure while cropping WKWebView snapshot")
+                completion(nil, "<iOSLaTeX> LaTeXRenderer getLaTeXImage Failure while cropping WKWebView snapshot")
                 return
             }
 
             guard let resizedImage = strongSelf.resize(croppedImage, withScale: scale) else {
-                completion(nil, "<iOSLaTeX> getLaTeXImage Failure while resizing cropped WKWebView snapshot")
+                completion(nil, "<iOSLaTeX> LaTeXRenderer getLaTeXImage Failure while resizing cropped WKWebView snapshot")
                 return
             }
             
-            print("<iOSLaTeX> getLaTeXImage end")
+            print("<iOSLaTeX> LaTeXRenderer getLaTeXImage end")
             completion(resizedImage, nil)
         }
     }
     
     private func crop(_ image: UIImage, toWidth width: CGFloat, andHeight height: CGFloat) -> UIImage? {
         guard let cgImage = image.cgImage else {
-            print("<iOSLaTeX> crop begin false")
+            print("<iOSLaTeX> LaTeXRenderer crop begin false")
             return nil
         }
-        print("<iOSLaTeX> crop begin true")
+        print("<iOSLaTeX> LaTeXRenderer crop begin true")
         let cgImageWidth = cgImage.width
         let cgImageHeight = cgImage.height
         
@@ -324,16 +325,16 @@ public class LaTeXRenderer: NSObject {
         let cropRect = CGRect(x: 0, y: 0, width: cropWidth, height: cropHeight)
         
         guard let croppedCgImage = cgImage.cropping(to: cropRect) else {
-            print("<iOSLaTeX> crop end false")
+            print("<iOSLaTeX> LaTeXRenderer crop end false")
             return nil
         }
         
-        print("<iOSLaTeX> crop end true")
+        print("<iOSLaTeX> LaTeXRenderer crop end true")
         return UIImage(cgImage: croppedCgImage)
     }
     
     private func resize(_ image: UIImage, withScale scale: CGFloat) -> UIImage? {
-        print("<iOSLaTeX> resize begin")
+        print("<iOSLaTeX> LaTeXRenderer resize begin")
         let newWidth = image.size.width * scale
         let newHeight = image.size.height * scale
         let newSize = CGSize(width: newWidth, height: newHeight)
@@ -348,7 +349,7 @@ public class LaTeXRenderer: NSObject {
     }
 
     @objc public func destroy(){
-        print("<iOSLaTeX> destroy begin")
+        print("<iOSLaTeX> LaTeXRenderer destroy begin")
         self.webView.stopLoading()
         self.webView.uiDelegate = nil
         self.webView.navigationDelegate = nil
@@ -359,7 +360,7 @@ public class LaTeXRenderer: NSObject {
 
 extension LaTeXRenderer: WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("<iOSLaTeX> userContentController didReceive begin")
+        print("<iOSLaTeX> LaTeXRenderer userContentController didReceive begin")
         if (message.body as? String) == "ready" {
             self.isReady = true
         } else if message.name == self.mathJaxCallbackHandler {
@@ -368,8 +369,8 @@ extension LaTeXRenderer: WKNavigationDelegate, WKUIDelegate, WKScriptMessageHand
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("<iOSLaTeX> webView didFail begin")
-        self.handleLaTeXRenderingFailure("WKWebView navigation failed")
+        print("<iOSLaTeX> LaTeXRenderer webView didFail begin")
+        self.handleLaTeXRenderingFailure("<iOSLaTeX> LaTeXRenderer webView end Failure: WKWebView navigation failed")
         self.isReady = false
     }
 }
