@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import WebKit
 
 public class LaTeXRenderer: NSObject {
@@ -36,7 +37,9 @@ public class LaTeXRenderer: NSObject {
         
         let bundle = Bundle(for: type(of: self))
         let bundlePath = bundle.bundlePath
-        let htmlTemplatePath = bundle.path(forResource: "MathJaxRenderer", ofType: "html")!
+        print("<iOSLaTeX> bundlePath ", bundlePath)
+        
+        let htmlTemplatePath = bundle.path(forResource: "Assets/MathJaxRenderer", ofType: "html")!
         
         let webViewBaseUrl = URL(fileURLWithPath: bundlePath, isDirectory: true)
         let webViewHtml = try! String(contentsOfFile: htmlTemplatePath)
