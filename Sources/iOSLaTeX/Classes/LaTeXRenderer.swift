@@ -28,6 +28,10 @@ public class LaTeXRenderer: NSObject {
     
     private var renderQueue: OperationQueue! = OperationQueue()
     
+    public static func add(_ a: Int, _ b: Int) -> Int {
+        return a + b
+    }
+    
     @objc public init(parentView: UIView) {
         super.init()
         
